@@ -1,0 +1,877 @@
+<!-- Include GSAP Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+
+<style>
+    /*=============== VARIABLES (Scoped to this section) ===============*/
+    .section-wrapper {
+        --first-color: #2aebd7; /* Bright cyan for dark bg */
+        --title-color: #0F2A3F;
+        --text-color: #4a5a67;
+        --container-color: #ffffff;
+        --body-font: "Poppins", sans-serif;
+        --h2-font-size: 1.25rem;
+        --small-font-size: .813rem;
+        
+        position: relative;
+        overflow: hidden;
+        font-family: var(--body-font);
+        padding-block: 5rem;
+        background-color: #0F2A3F; /* Your requested color */
+    }
+
+    /* GSAP Animated Background Canvas */
+    .bg-animation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    .blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.3;
+    }
+
+    /*=============== CARD LAYOUT ===============*/
+    .card-section-container {
+        position: relative;
+        z-index: 1; /* Sits above the blobs */
+        display: grid;
+        place-items: center;
+        margin-inline: 1.5rem;
+    }
+
+    .card__container {
+        display: grid;
+        row-gap: 4rem;
+        max-width: 1120px;
+        width: 100%;
+    }
+
+    .card__article {
+        position: relative;
+        overflow: hidden;
+        border-radius: 1.5rem;
+        opacity: 0; /* Managed by GSAP */
+        transform: translateY(50px);
+        background: #163a55; /* Subtle card backing */
+    }
+
+    .card__img {
+        width: 100%;
+        aspect-ratio: 4/3;
+        object-fit: cover;
+        border-radius: 1.5rem;
+        display: block;
+        transition: transform .5s;
+    }
+
+    .card__data {
+        width: 280px;
+        background-color: var(--container-color);
+        padding: 1.5rem 2rem;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        border-radius: 1rem;
+        position: absolute;
+        bottom: -9rem;
+        left: 0;
+        right: 0;
+        margin-inline: auto;
+        opacity: 0;
+        transition: opacity 1s 1s;
+    }
+
+    .card__description {
+        display: block;
+        font-size: var(--small-font-size);
+        margin-bottom: .25rem;
+        color: var(--text-color);
+    }
+
+    .card__title {
+        font-size: var(--h2-font-size);
+        font-weight: 600;
+        color: var(--title-color);
+        margin-bottom: .75rem;
+    }
+
+    .card__button {
+        text-decoration: none;
+        font-size: var(--small-font-size);
+        font-weight: 600;
+        color: #127a6f; /* Darker teal for readability on white */
+        transition: color .3s;
+    }
+
+    /* Hover Effects */
+    .card__article:hover .card__img {
+        transform: scale(1.1);
+    }
+
+    .card__article:hover .card__data {
+        animation: show-data 1s forwards;
+        opacity: 1;
+        transition: opacity .3s;
+    }
+
+    .card__article:hover {
+        animation: remove-overflow 2s forwards;
+    }
+
+    .card__article:not(:hover) {
+        animation: show-overflow 2s forwards;
+    }
+
+    .card__article:not(:hover) .card__data {
+        animation: remove-data 1s forwards;
+    }
+
+    @keyframes show-data {
+        50% { transform: translateY(-10rem); }
+        100% { transform: translateY(-7rem); }
+    }
+
+    @keyframes remove-overflow { to { overflow: initial; } }
+
+    @keyframes remove-data {
+        0% { transform: translateY(-7rem); }
+        50% { transform: translateY(-10rem); }
+        100% { transform: translateY(.5rem); }
+    }
+
+    @keyframes show-overflow {
+        0% { overflow: initial; pointer-events: none; }
+        50% { overflow: hidden; }
+    }
+
+    /*=============== RESPONSIVE BREAKPOINTS ===============*/
+    @media screen and (max-width: 340px) {
+        .card__data { width: 220px; padding: 1rem; }
+    }
+
+    @media screen and (min-width: 768px) {
+        .card__container {
+            grid-template-columns: repeat(2, 1fr);
+            column-gap: 1.5rem;
+        }
+    }
+
+    @media screen and (min-width: 1120px) {
+        .card__container {
+            grid-template-columns: repeat(3, 1fr);
+            column-gap: 2rem;
+        }
+        .card__data { width: 316px; }
+    }
+</style>
+
+<section class="section-wrapper">
+    <!-- GSAP Background Blobs -->
+    <div class="bg-animation" id="bg-animation"></div>
+
+    <div class="card-section-container">
+        <div class="card__container">
+            <!-- Card 1 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Vancouver, Canada</span>
+                    <h2 class="card__title">The Great Path</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Poon Hill, Nepal</span>
+                    <h2 class="card__title">Starry Night</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 3 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Bojcin Forest, Serbia</span>
+                    <h2 class="card__title">Path Of Peace</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 4 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Ubud, Bali</span>
+                    <h2 class="card__title">Tropical Haven</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 5 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Alps, Switzerland</span>
+                    <h2 class="card__title">Alpine Mirror</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 6 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Yosemite, USA</span>
+                    <h2 class="card__title">Valley Spirits</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 7 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1532274402911-5a3b0275d824?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Skógafoss, Iceland</span>
+                    <h2 class="card__title">Frozen Thunder</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 8 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1528164344705-47542687990d?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Kyoto, Japan</span>
+                    <h2 class="card__title">Zen Garden</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 9 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Santorini, Greece</span>
+                    <h2 class="card__title">White Horizon</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+<br>
+<section class="section-wrapper">
+    <!-- GSAP Background Blobs -->
+    <div class="bg-animation" id="bg-animation"></div>
+
+    <div class="card-section-container">
+        <div class="card__container">
+            <!-- Card 1 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Vancouver, Canada</span>
+                    <h2 class="card__title">The Great Path</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Poon Hill, Nepal</span>
+                    <h2 class="card__title">Starry Night</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 3 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Bojcin Forest, Serbia</span>
+                    <h2 class="card__title">Path Of Peace</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 4 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Ubud, Bali</span>
+                    <h2 class="card__title">Tropical Haven</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 5 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Alps, Switzerland</span>
+                    <h2 class="card__title">Alpine Mirror</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 6 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Yosemite, USA</span>
+                    <h2 class="card__title">Valley Spirits</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 7 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1532274402911-5a3b0275d824?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Skógafoss, Iceland</span>
+                    <h2 class="card__title">Frozen Thunder</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 8 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1528164344705-47542687990d?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Kyoto, Japan</span>
+                    <h2 class="card__title">Zen Garden</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 9 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Santorini, Greece</span>
+                    <h2 class="card__title">White Horizon</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+<br>
+<section class="section-wrapper">
+    <!-- GSAP Background Blobs -->
+    <div class="bg-animation" id="bg-animation"></div>
+
+    <div class="card-section-container">
+        <div class="card__container">
+            <!-- Card 1 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Vancouver, Canada</span>
+                    <h2 class="card__title">The Great Path</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Poon Hill, Nepal</span>
+                    <h2 class="card__title">Starry Night</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 3 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Bojcin Forest, Serbia</span>
+                    <h2 class="card__title">Path Of Peace</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 4 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Ubud, Bali</span>
+                    <h2 class="card__title">Tropical Haven</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 5 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Alps, Switzerland</span>
+                    <h2 class="card__title">Alpine Mirror</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 6 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Yosemite, USA</span>
+                    <h2 class="card__title">Valley Spirits</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 7 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1532274402911-5a3b0275d824?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Skógafoss, Iceland</span>
+                    <h2 class="card__title">Frozen Thunder</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 8 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1528164344705-47542687990d?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Kyoto, Japan</span>
+                    <h2 class="card__title">Zen Garden</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 9 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Santorini, Greece</span>
+                    <h2 class="card__title">White Horizon</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+<br>
+<section class="section-wrapper">
+    <!-- GSAP Background Blobs -->
+    <div class="bg-animation" id="bg-animation"></div>
+
+    <div class="card-section-container">
+        <div class="card__container">
+            <!-- Card 1 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Vancouver, Canada</span>
+                    <h2 class="card__title">The Great Path</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Poon Hill, Nepal</span>
+                    <h2 class="card__title">Starry Night</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 3 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Bojcin Forest, Serbia</span>
+                    <h2 class="card__title">Path Of Peace</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 4 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Ubud, Bali</span>
+                    <h2 class="card__title">Tropical Haven</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 5 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Alps, Switzerland</span>
+                    <h2 class="card__title">Alpine Mirror</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 6 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Yosemite, USA</span>
+                    <h2 class="card__title">Valley Spirits</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 7 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1532274402911-5a3b0275d824?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Skógafoss, Iceland</span>
+                    <h2 class="card__title">Frozen Thunder</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 8 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1528164344705-47542687990d?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Kyoto, Japan</span>
+                    <h2 class="card__title">Zen Garden</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 9 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Santorini, Greece</span>
+                    <h2 class="card__title">White Horizon</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+<br>
+<section class="section-wrapper">
+    <!-- GSAP Background Blobs -->
+    <div class="bg-animation" id="bg-animation"></div>
+
+    <div class="card-section-container">
+        <div class="card__container">
+            <!-- Card 1 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Vancouver, Canada</span>
+                    <h2 class="card__title">The Great Path</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Poon Hill, Nepal</span>
+                    <h2 class="card__title">Starry Night</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 3 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Bojcin Forest, Serbia</span>
+                    <h2 class="card__title">Path Of Peace</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 4 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Ubud, Bali</span>
+                    <h2 class="card__title">Tropical Haven</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 5 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Alps, Switzerland</span>
+                    <h2 class="card__title">Alpine Mirror</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 6 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Yosemite, USA</span>
+                    <h2 class="card__title">Valley Spirits</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 7 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1532274402911-5a3b0275d824?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Skógafoss, Iceland</span>
+                    <h2 class="card__title">Frozen Thunder</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 8 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1528164344705-47542687990d?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Kyoto, Japan</span>
+                    <h2 class="card__title">Zen Garden</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 9 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Santorini, Greece</span>
+                    <h2 class="card__title">White Horizon</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+<br>
+<section class="section-wrapper">
+    <!-- GSAP Background Blobs -->
+    <div class="bg-animation" id="bg-animation"></div>
+
+    <div class="card-section-container">
+        <div class="card__container">
+            <!-- Card 1 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Vancouver, Canada</span>
+                    <h2 class="card__title">The Great Path</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Poon Hill, Nepal</span>
+                    <h2 class="card__title">Starry Night</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 3 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Bojcin Forest, Serbia</span>
+                    <h2 class="card__title">Path Of Peace</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 4 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Ubud, Bali</span>
+                    <h2 class="card__title">Tropical Haven</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 5 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Alps, Switzerland</span>
+                    <h2 class="card__title">Alpine Mirror</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 6 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Yosemite, USA</span>
+                    <h2 class="card__title">Valley Spirits</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 7 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1532274402911-5a3b0275d824?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Skógafoss, Iceland</span>
+                    <h2 class="card__title">Frozen Thunder</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 8 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1528164344705-47542687990d?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Kyoto, Japan</span>
+                    <h2 class="card__title">Zen Garden</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 9 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Santorini, Greece</span>
+                    <h2 class="card__title">White Horizon</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+<br>
+<section class="section-wrapper">
+    <!-- GSAP Background Blobs -->
+    <div class="bg-animation" id="bg-animation"></div>
+
+    <div class="card-section-container">
+        <div class="card__container">
+            <!-- Card 1 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Vancouver, Canada</span>
+                    <h2 class="card__title">The Great Path</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 2 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Poon Hill, Nepal</span>
+                    <h2 class="card__title">Starry Night</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 3 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Bojcin Forest, Serbia</span>
+                    <h2 class="card__title">Path Of Peace</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 4 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Ubud, Bali</span>
+                    <h2 class="card__title">Tropical Haven</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 5 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Alps, Switzerland</span>
+                    <h2 class="card__title">Alpine Mirror</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 6 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Yosemite, USA</span>
+                    <h2 class="card__title">Valley Spirits</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 7 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1532274402911-5a3b0275d824?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Skógafoss, Iceland</span>
+                    <h2 class="card__title">Frozen Thunder</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 8 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1528164344705-47542687990d?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Kyoto, Japan</span>
+                    <h2 class="card__title">Zen Garden</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+            <!-- Card 9 -->
+            <article class="card__article">
+                <img src="https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&q=80&w=800" class="card__img">
+                <div class="card__data">
+                    <span class="card__description">Santorini, Greece</span>
+                    <h2 class="card__title">White Horizon</h2>
+                    <a href="#" class="card__button">Read More</a>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+<script>
+    // 1. Generate Ambient Background Blobs
+    const bgContainer = document.getElementById('bg-animation');
+    // Using colors that pop against #0F2A3F
+    const blobColors = ['#1a4a6e', '#2aebd7', '#127a6f', '#1b3d54'];
+    
+    for (let i = 0; i < 8; i++) {
+        const blob = document.createElement('div');
+        blob.className = 'blob';
+        const size = Math.random() * 400 + 200;
+        blob.style.width = `${size}px`;
+        blob.style.height = `${size}px`;
+        blob.style.background = blobColors[Math.floor(Math.random() * blobColors.length)];
+        blob.style.left = `${Math.random() * 100}%`;
+        blob.style.top = `${Math.random() * 100}%`;
+        bgContainer.appendChild(blob);
+        
+        gsap.to(blob, {
+            x: 'random(-150, 150)',
+            y: 'random(-150, 150)',
+            duration: 'random(15, 25)',
+            repeat: -1,
+            yoyo: true,
+            ease: "sine.inOut"
+        });
+    }
+
+    // 2. Entrance Animation for Cards
+    gsap.to(".card__article", {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        stagger: 0.1,
+        ease: "power3.out",
+        delay: 0.3
+    });
+
+    // 3. 3D Tilt Effect on Hover
+    const articles = document.querySelectorAll('.card__article');
+    articles.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+
+            gsap.to(card, {
+                rotateX: rotateX,
+                rotateY: rotateY,
+                scale: 1.03,
+                duration: 0.4,
+                ease: "power2.out"
+            });
+        });
+
+        card.addEventListener('mouseleave', () => {
+            gsap.to(card, {
+                rotateX: 0,
+                rotateY: 0,
+                scale: 1,
+                duration: 0.7,
+                ease: "elastic.out(1, 0.5)"
+            });
+        });
+    });
+</script>

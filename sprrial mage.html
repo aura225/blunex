@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>templets</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .nav-shell{
+            position: fixed;
+            top: 2rem; right: 2vw;
+            z-index: 10;
+            pointer-events: none;  
+           
+        }
+        .main-nav ul {
+        color:#5ee7ff;
+        }
+        .spiral {
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            cursor: pointer;
+        }
+
+        /* Scroll Content */
+        section { position: relative; width: 100%; z-index: 2; pointer-events: none; }
+        .hero { height: 500vh; padding: 10vh 5vw; }
+        
+        .ui {
+            position: fixed;
+            top: 2.5rem; left: 2.5vw;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 8vw, 10rem);
+            line-height: 0.9;
+            text-transform: uppercase;
+            letter-spacing: -0.05em;
+            opacity: 0.1;
+        }
+
+        .status {
+            position: fixed;
+            bottom: 2rem; right: 2vw;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            z-index: 10;
+            color: #666;
+        }
+
+        /* Full Page Overlay Effect */
+        #overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+        #overlay.active { opacity: 1; pointer-events: all; }
+        #overlay img { max-width: 80%; max-height: 80vh; object-fit: contain; transform: scale(0.8); transition: transform 0.8s cubic-bezier(0.2, 1, 0.3, 1); }
+        #overlay.active img { transform: scale(1); }
+        .close-btn { position: absolute; top: 2rem; right: 2rem; cursor: pointer; font-size: 1rem; text-transform: uppercase; }
+        .site-footer {
+            position: relative;
+            z-index: 110;
+        }
+    </style>
+</head>
+<body>
+  <div class="nav-shell">
+                    <button class="hamburger-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                    <nav class="main-nav">
+                        <ul>
+                            <li><a href="#home" class="active"style= color:#faa321;>Home</a></li>
+                            <li><a href="#ag-section-wrapper"style= color:#faa321;>Projects</a></li>
+                            <li><a href="#vibe-gallery-root"style= color:#faa321;>templets</a></li>
+                            <li><a href="#designs"style= color:#faa321;>designs</a></li>
+                            <li><a href="#contact"style= color:#faa321;>Contact</a></li>
+                        </ul>
+                    </nav>
+  </div>
+  <section class="spiral">
+    <div id="overlay">
+        <div class="close-btn">Close [X]</div>
+        <img src="" alt="Full View">
+    </div>
+
+    <div class="ui">
+        <h1 id="main-title">Spiral<br>Archive</h1>
+    </div>
+    <div class="status" id="tile-info">Hover an image</div>
+
+    <canvas id="gallery-canvas"></canvas>
+
+    <section class="hero">
+        <!-- Spacer for scrolling -->
+    </section>
+  </section>
+  <footer class="site-footer" >
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <img src="./assets/logo.png" alt="" class="footer-logo">
+                <p>Bringing ideas to life with stunning design & code.</p>
+               <div class="social-links">
+                            <a href="">
+                                <img src="./assets/fb.png" alt="">
+                            </a>
+                            <a href="">
+                                <img src="./assets/insta.png" alt="">
+                            </a>
+                            <a href="">
+                                <img src="./assets/twitter.png" alt="">
+                            </a>
+                        </div>
+            </div>
+
+            <div class="footer-col footer-accordion">
+                <button class="footer-toggle" type="button">
+                    <h3>Quick Links</h3><span>+</span>
+                </button>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#ag-section-wrapper">Projects</a></li>
+                    <li><a href="#vibe-gallery-root">Templates</a></li>
+                    <li><a href="#designs">Designs</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+                
+            </div>
+
+
+            <div class="footer-col footer-accordion">
+                <button class="footer-toggle" type="button">
+                    <h3>Contact</h3><span>+</span>
+                </button>
+                <ul>
+                    <li><a href="mailto:hello@blunex.com">hello@blunex.com</a></li>
+                    <li><a href="tel:+10000000000">+1 (000) 000-0000</a></li>
+                    <li>Remote / Worldwide</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; <span id="footer-year"></span> Blunex. All rights reserved.</p>
+            <button class="footer-top-btn" id="footer-to-top">↑ Back to top</button>
+        </div>
+    </div>
+
+    <div class="footer-mobile-bar">
+        <a href="tel:+10000000000">☎ Call</a>
+        <a href="mailto:hello@blunex.com">✉ Email</a>
+        <button type="button" id="footer-mobile-to-top">↑ Top</button>
+    </div>
+  </footer>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "lenis": "https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.mjs"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import Lenis from 'lenis';
+
+        const CONFIG = {
+            totalImages: 50, // Increased count
+            tilesPerRevolution: 8,
+            startRadius: 6,
+            endRadius: 3,
+            tileHeightRatio: 1.4,
+            spiralGap: 0.6,
+            cameraDepth: 14,
+            baseRotationSpeed: 0.00005, // Slower
+            scrollRotationMultiplier: 0.00015, // Slower
+            rotationDecay: 0.92,
+            hoverScale: 1.3
+        };
+
+        // --- Setup ---
+        const canvas = document.getElementById('gallery-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        camera.position.z = CONFIG.cameraDepth;
+
+        const textureLoader = new THREE.TextureLoader();
+        const spiralGroup = new THREE.Group();
+        scene.add(spiralGroup);
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+        const tiles = [];
+        let hoveredTile = null;
+
+        // --- Spiral Logic ---
+        const buildSpiral = () => {
+            const angleStep = (Math.PI * 2) / CONFIG.tilesPerRevolution;
+            
+            for (let i = 0; i < CONFIG.totalImages; i++) {
+                const progress = i / CONFIG.totalImages;
+                const radius = THREE.MathUtils.lerp(CONFIG.startRadius, CONFIG.endRadius, progress);
+                const arcWidth = (2 * Math.PI * radius) / CONFIG.tilesPerRevolution;
+                const tileHeight = arcWidth * CONFIG.tileHeightRatio;
+
+                const geometry = new THREE.PlaneGeometry(arcWidth, tileHeight, 32, 1);
+                
+                // Bend plane
+                const pos = geometry.attributes.position;
+                for (let j = 0; j < pos.count; j++) {
+                    const x = pos.getX(j);
+                    const angle = x / radius;
+                    pos.setX(j, Math.sin(angle) * radius);
+                    pos.setZ(j, Math.cos(angle) * radius);
+                }
+                geometry.computeVertexNormals();
+
+                const material = new THREE.MeshBasicMaterial({
+                    map: textureLoader.load(`https://picsum.photos/seed/${i + 50}/600/800`),
+                    side: THREE.DoubleSide,
+                    transparent: true,
+                    opacity: 0.8
+                });
+
+                const mesh = new THREE.Mesh(geometry, material);
+                mesh.userData = { id: i, originalOpacity: 0.8, url: `https://picsum.photos/seed/${i + 50}/1200/1600` };
+
+                const container = new THREE.Group();
+                container.position.y = -i * (tileHeight * 0.5 + CONFIG.spiralGap);
+                container.rotation.y = i * angleStep;
+                
+                container.add(mesh);
+                spiralGroup.add(container);
+                tiles.push(mesh);
+            }
+        };
+
+        buildSpiral();
+
+        // --- Interaction ---
+        const lenis = new Lenis({ lerp: 0.05 }); // Smoother/Slower lerp
+        let scrollY = 0;
+        let spinVelocity = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        });
+
+        window.addEventListener('click', () => {
+            if (hoveredTile) {
+                const overlay = document.getElementById('overlay');
+                overlay.querySelector('img').src = hoveredTile.userData.url;
+                overlay.classList.add('active');
+            }
+        });
+
+        document.querySelector('.close-btn').addEventListener('click', () => {
+            document.getElementById('overlay').classList.remove('active');
+        });
+
+        lenis.on('scroll', (e) => {
+            scrollY = e.animatedScroll;
+            spinVelocity += Math.abs(e.velocity) * CONFIG.scrollRotationMultiplier;
+        });
+
+        // --- Animation ---
+        function animate(time) {
+            lenis.raf(time);
+
+            // Camera moves down as we scroll
+            const scrollProgress = scrollY / (document.body.scrollHeight - window.innerHeight);
+            camera.position.y = -scrollProgress * 40;
+
+            // Rotation
+            spiralGroup.rotation.y += CONFIG.baseRotationSpeed + spinVelocity;
+            spinVelocity *= CONFIG.rotationDecay;
+
+            // Raycasting for Hover
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObjects(tiles);
+
+            if (intersects.length > 0) {
+                if (hoveredTile !== intersects[0].object) {
+                    // Reset previous
+                    if (hoveredTile) {
+                        hoveredTile.scale.set(1, 1, 1);
+                        hoveredTile.material.opacity = 0.8;
+                    }
+                    hoveredTile = intersects[0].object;
+                    document.getElementById('tile-info').innerText = `Viewing Image #${hoveredTile.userData.id + 1}`;
+                }
+                // Hover effect scale
+                hoveredTile.scale.lerp(new THREE.Vector3(1.2, 1.2, 1.2), 0.1);
+                hoveredTile.material.opacity = 1.0;
+            } else {
+                if (hoveredTile) {
+                    hoveredTile.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1);
+                    hoveredTile.material.opacity = 0.8;
+                }
+                hoveredTile = null;
+                document.getElementById('tile-info').innerText = `Scroll to Explore`;
+            }
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        requestAnimationFrame(animate);
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
